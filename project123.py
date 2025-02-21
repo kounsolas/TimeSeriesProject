@@ -29,7 +29,7 @@ def seasonal_components(xV, period):
         sV[i:n:period] = monV[i] * np.ones(shape=len(np.arange(i, n, period)))
     return sV
 
-def portmanteau_test(xV, maxtau, show = False):
+def portmanteau_test(xV, maxtau, show=False):
     '''
     PORTMANTEAULB hypothesis test (H0) for independence of time series:
     tests jointly that several autocorrelations are zero.
@@ -37,17 +37,20 @@ def portmanteau_test(xV, maxtau, show = False):
     autocorrelations up to a maximum lag, for maximum lags
     1,2,...,maxtau.
     '''
-    ljung = acorr_ljungbox(xV, lags=maxtau)
-    ljung_val, ljung_pval = ljung.iloc[0].iloc[0], ljung.iloc[0].iloc[1]
-    '''
+    ljung_result = acorr_ljungbox(xV, lags=maxtau)
+    
+    # Extract the 'lb_stat' and 'lb_pvalue' columns from the DataFrame
+    ljung_val = ljung_result['lb_stat'].values
+    ljung_pval = ljung_result['lb_pvalue'].values
+    
     if show:
         fig, ax = plt.subplots(1, 1)
-        ax.scatter(np.arange(len(ljung_pval)), ljung_pval)
+        ax.scatter(np.arange(1, len(ljung_pval) + 1), ljung_pval)
         ax.axhline(0.05, linestyle='--', color='r')
         ax.set_title('Ljung-Box Portmanteau test')
         ax.set_yticks(np.arange(0, 1.1))
         plt.show()
-    '''
+    
     return ljung_val, ljung_pval
 
 def get_acf(xV, lags=10, alpha=0.05, show=True):
@@ -168,19 +171,19 @@ plt.title("Stationary A Timeseries (without seasonality)")
 plt.show()
 
 ## 2. White Noise Hypothesis Testing (H0: ρτ = 0)
-max_lag = 10
+max_lag = 20
 alpha = 0.05
 
 # Plot autocorrelation function
 auto_corr = get_acf(x, lags = max_lag)
 
 # Portmanteau test
-ljung_val, ljung_pval = portmanteau_test(x, max_lag)
+ljung_val, ljung_pval = portmanteau_test(x, max_lag, show=True)
 print("2. White Noise Hypothesis Testing (H0: ρτ = 0)")
-if ljung_pval < alpha:
-    print(f"p-value = {ljung_pval:.5e}: The stationay A timeseries is not white noise")
+if ljung_pval[max_lag-1] < alpha:
+    print(f"p-value = {ljung_pval[max_lag-1]:.5e}: The stationay A timeseries is not white noise")
 else:
-    print(f"p-value = {ljung_pval:.5e}: The stationay A timeseries is white noise")
+    print(f"p-value = {ljung_pval[max_lag-1]:.5e}: The stationay A timeseries is white noise")
     
 ## 3. Search for Best Linear Model
 '''
