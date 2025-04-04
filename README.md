@@ -1,0 +1,1 @@
+In this project, I worked with a dataset from a time series (solar energy) and performed data processing. I developed forecasts using various time series models, including linear models such as AutoRegressive (AR), Moving Average (MA), and ARMA, as well as non-linear models like Support Vector Machines (SVMs) and Neural Networks (NNs).
